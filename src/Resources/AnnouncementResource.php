@@ -2,13 +2,19 @@
 
 namespace Rupadana\FilamentAnnounce\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Rupadana\FilamentAnnounce\Resources\AnnouncementResource\Pages\ListAnnouncements;
+use Rupadana\FilamentAnnounce\Resources\AnnouncementResource\Pages\CreateAnnouncement;
+use Rupadana\FilamentAnnounce\Resources\AnnouncementResource\Pages\ViewAnnouncement;
 use App\Models\User;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Support\Facades\FilamentColor;
 use Filament\Tables;
@@ -23,12 +29,12 @@ class AnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-megaphone';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-megaphone';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('name')
                     ->minLength(5)
                     ->required()
@@ -76,12 +82,12 @@ class AnnouncementResource extends Resource
                 IconColumn::make('icon')
                     ->translateLabel(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -89,9 +95,9 @@ class AnnouncementResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAnnouncements::route('/'),
-            'create' => Pages\CreateAnnouncement::route('/create'),
-            'view' => Pages\ViewAnnouncement::route('/{record}'),
+            'index' => ListAnnouncements::route('/'),
+            'create' => CreateAnnouncement::route('/create'),
+            'view' => ViewAnnouncement::route('/{record}'),
         ];
     }
 
