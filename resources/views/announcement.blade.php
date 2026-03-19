@@ -18,18 +18,17 @@
 
     $colorClasses = \Illuminate\Support\Arr::toCssClasses([
         'flex items-center border border-transparent px-6 py-2 gap-4',
-        'bg-white text-gray-950 dark:bg-white/5 dark:text-white' => $color === 'gray',
-        'bg-custom-600 text-white dark:bg-custom-500' => $color !== 'gray',
+        'text-gray-950 dark:text-white' => $color === 'gray',
+        'text-white' => $color !== 'gray',
     ]);
 
-    $colorStyles = \Illuminate\Support\Arr::toCssStyles([
-        \Filament\Support\get_color_css_variables($color, shades: [400, 500, 600]) => $color !== 'gray',
-    ]);
-
-    if (gettype($color) == 'string') {
-        $colorStyles = "--c-400:$color;--c-500:$color;--c-600:$color;";
+    if (is_string($color)) {
+        $colorStyles = 'background-color: '.$color.';';
+    } elseif (is_array($color) && isset($color[500])) {
+        $colorStyles = 'background-color: rgb('.$color[500].');';
+    } else {
+        $colorStyles = 'background-color: oklch(0.769 0.188 70.08);';
     }
-
 @endphp
 
 <div class="{{ $colorClasses }}" style="{{ $colorStyles }}">
@@ -52,7 +51,9 @@
             ])>
                 <h5 class="font-semibold">{{ $title }}</h5>
 
-                {{-- <x-filament-notifications::actions :actions="$actions" class="flex-wrap gap-1" /> --}}
+                @foreach ($actions ?? [] as $action)
+                    {{ $action }}
+                @endforeach
             </div>
         @elseif (!$title && $body && $actions)
             <div @class([
@@ -67,7 +68,9 @@
             ])>
                 <span class="text-sm">{{ $body }}</span>
 
-                {{-- <x-filament-notifications::actions :actions="$actions" class="flex-wrap gap-1" /> --}}
+                @foreach ($actions ?? [] as $action)
+                    {{ $action }}
+                @endforeach
             </div>
         @else
             <div @class([
@@ -96,7 +99,9 @@
                 <span class="text-sm">{{ $body }}</span>
 
                 @if ($actions)
-                    {{-- <x-filament-notifications::actions :actions="$actions" class="flex-wrap gap-1" /> --}}
+                    @foreach ($actions ?? [] as $action)
+                        {{ $action }}
+                    @endforeach
                 @endif
             </div>
         @endif
